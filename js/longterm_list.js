@@ -13,17 +13,20 @@ function deleteLongterm(event)
 {
     const li = event.target.parentElement;
     li.remove();
+    lts = lts.filter((longterm) => longterm.id !== parseInt(li.id));
+    saveLts();
 }
 
 function paintLongterm(newLongterm) {
     const long = document.createElement("li");
+    long.id = newLongterm.id;
     const span = document.createElement("span");
-    span.innerText = newLongterm;
     const button = document.createElement("button");
     button.innerText = "X";
     button.addEventListener("click", deleteLongterm);
     long.appendChild(span);
     long.appendChild(button);
+    span.innerText = newLongterm.text;
     longtermList.appendChild(long);
 }
 
@@ -31,8 +34,12 @@ function handlelongtermSubmit(event){
     event.preventDefault();
     const newLongterm = longtermInput.value;
     longtermInput.value = "";
-    lts.push(newLongterm);
-    paintLongterm(newLongterm);
+    const newLongtermObj = {
+        text: newLongterm,
+        id: Date.now(),
+    };
+    lts.push(newLongtermObj);
+    paintLongterm(newLongtermObj);
     saveLts();
 }
 
@@ -42,7 +49,7 @@ longtermForm.addEventListener("submit", handlelongtermSubmit);
 
 const savedLts = localStorage.getItem(LTS_KEY); 
 
-if(saveLts !== null){
+if(savedLts !== null){
     const parsedLts = JSON.parse(savedLts);
     lts = parsedLts;
     parsedLts.forEach(paintLongterm);
